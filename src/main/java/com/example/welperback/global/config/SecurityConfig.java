@@ -35,6 +35,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        // 여기도 꼭 지우기
+                        .requestMatchers( "/api/v1/reports").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

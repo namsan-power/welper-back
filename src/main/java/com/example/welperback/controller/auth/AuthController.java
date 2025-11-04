@@ -1,4 +1,4 @@
-package com.example.welperback.controller;
+package com.example.welperback.controller.auth;
 
 import com.example.welperback.dto.auth.request.LoginRequest;
 import com.example.welperback.dto.auth.response.LoginResponse;

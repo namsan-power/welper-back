@@ -52,6 +52,9 @@ public class Report {
     @OneToMany(mappedBy = "report")
     private List<ReportParticipant> participants = new ArrayList<>();
 
+    @Column(name = "ai_analysis_data", columnDefinition = "json")
+    private String aiAnalysisData;
+
     protected Report() {
     }
 
@@ -141,5 +144,13 @@ public class Report {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public String getAnalysisData() {
+        return aiAnalysisData;
+    }
+
+    public void setAiAnalysisData(String aiAnalysisData) {
+        this.aiAnalysisData = aiAnalysisData;
     }
 }
