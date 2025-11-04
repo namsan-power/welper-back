@@ -1,26 +1,30 @@
 #===================================================================
-# 기본 설정
+# 기본 설정 (공통)
 #===================================================================
 spring:
   profiles:
     active: local
 
 application:
-  name: welper-back    
+  name: welper-back
 
-
-
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 3600000 # 1시간
+  refresh-expiration: 604800000 # 7일
 
 ---
 # ==================================================================
-# local
+# local (개발용)
 # ==================================================================
 spring:
   config:
     activate:
       on-profile: local
+
   application:
     name: welper-back
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,23 +37,23 @@ spring:
     password: ${DB_LOCAL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
-
 ---
 # ==================================================================
-# prod
+# prod (운영용)
 # ==================================================================
 spring:
   config:
     activate:
       on-profile: prod
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate 
     properties:
       hibernate:
         show_sql: false
