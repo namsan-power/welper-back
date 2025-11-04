@@ -7,7 +7,10 @@ spring:
 
 application:
   name: welper-back    
-
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 3600000 # 1사건
+  refresh-expiration: 604800000 #7일
 
 
 
