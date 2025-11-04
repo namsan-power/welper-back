@@ -124,6 +124,9 @@ public class User {
         return reportParticipations;
     }
 
+    //JPA 엔티티가 DB 식별자(id)를 기준으로
+    //"논리적으로 같은 객체인지" 안전하게 비교할 수 있게 해주는 코드입니다.
+    //특히 컬렉션(Set, Map)이나 영속성 컨텍스트 내부에서 엔티티 중복을 방지하는 핵심 역할을 합니다.
     @Override
     public boolean equals(Object o) {
         if (this == o) {
