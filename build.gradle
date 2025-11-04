@@ -30,3 +30,6 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// dependency 대기
+// 'org.springframework.boot:spring-boot-starter-security'
