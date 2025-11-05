@@ -16,7 +16,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Server devServer = new Server();
-        devServer.setUrl("/"); // 로컬 환경 API 서버 URL
+        devServer.setUrl("http://localhost:8080");
 
         Server prodServer = new Server();
         prodServer.setUrl("https://api.welper.store"); // 운영 서버 URL
