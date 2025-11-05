@@ -36,11 +36,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
+                                "/swagger",
                                 "/swagger/**",
+                                "/swagger-ui",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/api/v1/**",
-                                "/api/v1/auth/login").permitAll()
+                                "/v3/api-docs",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
