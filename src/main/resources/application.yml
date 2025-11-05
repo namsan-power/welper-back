@@ -10,12 +10,12 @@ application:
 
 jwt:
   secret: ${JWT_SECRET}
-  access-expiration: 3600000 # 1시간
-  refresh-expiration: 604800000 # 7일
+  access-expiration: 3600000   # 1시간
+  refresh-expiration: 604800000  # 7일
 
 springdoc:
   swagger-ui:
-    path: /swagger
+    path: /swagger   # Swagger 단축 경로 설정
 
 ---
 # ==================================================================
@@ -57,8 +57,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate 
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: false
         format_sql: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger
