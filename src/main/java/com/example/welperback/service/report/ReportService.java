@@ -114,4 +114,19 @@ public class ReportService {
         });
 
     }
+
+    /** 보고서 삭제 기능
+     *  @param: reportsId(Long)
+     *  이 작업도 중간에 실패하면 다 취소시켜야함
+     */
+    public void deleteReport(Long reportId) {
+
+        //일단 DB에서 보고서 찾아와
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보고서가 존재하지 않습니다." + reportId));
+
+        reportRepository.delete(report);
+
+
+    }
 }

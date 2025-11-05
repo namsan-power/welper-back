@@ -1,17 +1,7 @@
 package com.example.welperback.domain.report;
 
 import com.example.welperback.domain.user.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,10 +36,12 @@ public class Report {
     @Column(name = "preview_html")
     private String previewHtml;
 
-    @OneToMany(mappedBy = "report")
+    //cascadeType.All 하면 report가 저장되거나 삭제될 때 똑같이 처리, orphanRemove 해두면 participants 누가 지우면 짝인 얘도 지워짐
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReportClient> reportClients = new ArrayList<>();
 
-    @OneToMany(mappedBy = "report")
+    //cascadeType.All 하면 report가 저장되거나 삭제될 때 똑같이 처리, orphanRemove 해두면 participants 누가 지우면 짝인 얘도 지워짐
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReportParticipant> participants = new ArrayList<>();
 
     @Column(name = "ai_analysis_data", columnDefinition = "json")

@@ -37,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // 여기도 꼭 지우기
                         .requestMatchers( "/api/v1/reports").permitAll()
+                        // report 삭제 api
+                        .requestMatchers("/api/v1/reports/{reportId}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

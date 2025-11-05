@@ -1,54 +1,61 @@
-﻿package com.example.welperback.dto.report.response;
+package com.example.welperback.dto.report.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
-* AI 紐⑤뜽??JSON ?묐떟??1:1濡?留ㅽ븨?섎뒗 DTO
+* AI 보고서 통신 DTO (AI가 분석한 JSON 결과를 받는 DTO)
 */
 @Getter
 @NoArgsConstructor
 public class AIAnalysisResponseDto {
+    // 욕구 영역 14개 항목
     private NeedsAssessmentDto needsAssessment;
+    // 척도 이용 사정
     private List<ScaleAssessmentDto> scaleAssessment;
+    // 우선순위 요약
     private List<PrioritySummaryDto> prioritySummary;
+    // 사정 종합의견
     private String comprehensiveOpinion;
+    // 사례관리 수준
     private String caseManagementLevel;
 
     
-    // --- 1. NeedsAssessmentDto (14媛??뺢뎄 ?곸뿭) ---
+    // --- 1. NeedsAssessmentDto (14가지 욕구 사정) ---
     @Getter
     @NoArgsConstructor
     public static class NeedsAssessmentDto {
-        private NeedClothingDto clothing; // ?섏깮??        private NeedFoodDto food; // ?앹깮??        private NeedDailyLivingDto dailyLiving; // ?쇱긽?앺솢
-        private NeedHealthDto health; // 嫄닿컯
-        private NeedPsychosocialDto psychosocial; // ?щ━?뺤꽌
-        private NeedJobDto job; // 吏곸뾽
-        private NeedEconomicDto economic; // 寃쎌젣
-        private NeedHousingDto housing; // 二쇨굅
-        private NeedEducationDto education; // 援먯쑁
-        private NeedCaregivingDto caregiving; // ?뚮큵
-        private NeedRelationshipsDto relationships; // 媛議?諛??ы쉶??愿怨?        private NeedFamilyFunctionDto familyFunction; // 媛議깃린??        private NeedSafetyDto safety; // ?덉쟾
-        private NeedLegalDto legal; // 沅뚯씡蹂댁옣 諛?踰뺣쪧
+        private NeedClothingDto clothing; // 의생활       private NeedFoodDto food; //식생활       private NeedDailyLivingDto dailyLiving; //일상생활
+        private NeedHealthDto health; //건강
+        private NeedPsychosocialDto psychosocial; // 심리정서
+        private NeedJobDto job; // 직업
+        private NeedEconomicDto economic; // 경제
+        private NeedHousingDto housing; // 주거
+        private NeedEducationDto education; // 교육(학습),진로
+        private NeedCaregivingDto caregiving; // 가족관계
+        private NeedRelationshipsDto relationships; // 사회적관계         private NeedFamilyFunctionDto familyFunction; // 가족기능 가족역량        private NeedSafetyDto safety; // 안전
+        private NeedLegalDto legal; // 권익보장 및 법률
     }
 
-    // --- 2. 媛??뺢뎄 ?곸뿭???몃? DTO (泥댄겕由ъ뒪???ы븿) ---
+    // --- 2. 각 욕구 영역의 세부 DTO ---
 
-    // 2-1. ?섏깮??    @Getter @NoArgsConstructor
+    // 2-1. 의생활
+    @Getter @NoArgsConstructor
     public static class NeedClothingDto {
         private String description; private int level; private int priority;
         private String provision; private String management;
     }
 
-    // 2-2. ?앹깮??    @Getter @NoArgsConstructor
+    // 2-2. 식생활
+    @Getter @NoArgsConstructor
     public static class NeedFoodDto {
         private String description; private int level; private int priority;
         private String mealsPerDay; private String reasonForSkipping;
         private String nutritionStatus; private String mealPreparation;
     }
 
-    // 2-3. ?쇱긽?앺솢
+    // 2-3. 일상생활
     @Getter @NoArgsConstructor
     public static class NeedDailyLivingDto {
         private String description; private int level; private int priority;
@@ -56,7 +63,7 @@ public class AIAnalysisResponseDto {
         private String emergencyResponse;
     }
     
-    // 2-3-Helper. 吏덈퀝 DTO
+    // 2-3-Helper. 질병 DTO
     @Getter @NoArgsConstructor
     public static class DiseaseDto {
         private String name; private String hospitalized; private String medication;
@@ -70,7 +77,7 @@ public class AIAnalysisResponseDto {
         private List<DiseaseDto> mentalDiseases; private List<String> mentalSymptoms;
     }
 
-    // 2-5. ?щ━?뺤꽌
+    // 2-5. 건강
     @Getter @NoArgsConstructor
     public static class NeedPsychosocialDto {
         private String description; private int level; private int priority;
@@ -78,7 +85,7 @@ public class AIAnalysisResponseDto {
         private List<String> negativeBehaviors;
     }
 
-    // 2-6. 吏곸뾽
+    // 2-6. 심리정서
     @Getter @NoArgsConstructor
     public static class NeedJobDto {
         private String description; private int level; private int priority;
@@ -86,7 +93,8 @@ public class AIAnalysisResponseDto {
         private List<String> difficulties; private String satisfaction;
     }
     
-    // 2-7-Helper. 寃쎌젣 DTO??    @Getter @NoArgsConstructor
+    // 2-7 경제 DTO들
+    @Getter @NoArgsConstructor
     public static class IncomeDto {
         private int total; private int labor; private int govSupport; private int donation; private int other;
     }
@@ -107,7 +115,7 @@ public class AIAnalysisResponseDto {
         private String reason;
     }
 
-// 2-7. 寃쎌젣
+// 2-7. 경제
 @Getter @NoArgsConstructor
 public static class NeedEconomicDto {
     private String description;
@@ -119,40 +127,42 @@ public static class NeedEconomicDto {
     private DebtDto debt; // DebtDto瑜??ъ슜
 }
 
-    // 2-8. 二쇨굅
+    // 2-8. 주거
     @Getter @NoArgsConstructor
     public static class NeedHousingDto {
         private String description; private int level; private int priority;
         private List<String> internalEnvironment; private List<String> externalEnvironment;
     }
 
-    // 2-9. 援먯쑁
+    // 2-9. 교육
     @Getter @NoArgsConstructor
     public static class NeedEducationDto {
         private String description; private int level; private int priority;
         private List<String> academicAbility; private List<String> educationConditions;
     }
 
-    // 2-10. ?뚮큵
+    // 2-10. 돌봄
     @Getter @NoArgsConstructor
     public static class NeedCaregivingDto {
         private String description; private int level; private int priority;
         private String target; private String relationship; private String needs;
     }
 
-    // 2-11. 愿怨?    @Getter @NoArgsConstructor
+    // 2-11. 관계
+    @Getter @NoArgsConstructor
     public static class NeedRelationshipsDto {
         private String description; private int level; private int priority;
         private String familyConflict; private String familyRelations; private String neighbors; private String socialSupport;
     }
 
-    // 2-12. 媛議깃린??    @Getter @NoArgsConstructor
+    // 2-12. 가족기능
+    @Getter @NoArgsConstructor
     public static class NeedFamilyFunctionDto {
         private String description; private int level; private int priority;
         private String rolePerformance; private int familyCompetenceScore;
     }
 
-    // 2-13. ?덉쟾
+    // 2-13. 안전
     @Getter @NoArgsConstructor
     public static class NeedSafetyDto {
         private String description; private int level; private int priority;
@@ -160,20 +170,20 @@ public static class NeedEconomicDto {
         private String emergencyResource;
     }
 
-    // 2-14. 踰뺣쪧
+    // 2-14. 법률
     @Getter @NoArgsConstructor
     public static class NeedLegalDto {
         private String description; private int level; private int priority;
         private List<String> legalDispute; private List<String> rightsIssue;
     }
 
-    // --- 3. 泥숇룄 ?댁슜 ?ъ젙 (scaleAssessment) ---
+    // --- 3. 척도 이용 사정 (scaleAssessment) ---
     @Getter @NoArgsConstructor
     public static class ScaleAssessmentDto {
         private String name; private String result; private String notes;
     }
 
-    // --- 4. ?곗꽑?쒖쐞 ?붿빟 (prioritySummary) ---
+    // --- 4. 우선순위 요약 (prioritySummary) ---
     @Getter @NoArgsConstructor
     public static class PrioritySummaryDto {
         private int priority; private String area; private String presentedNeed;

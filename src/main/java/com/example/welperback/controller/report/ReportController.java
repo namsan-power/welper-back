@@ -25,5 +25,18 @@ public class ReportController {
 
         return ResponseEntity.ok(ApiResponse.success("보고서 생성 요청 성공", null));
     }
+
+    /**
+     * 보고서 삭제 EndPoint
+     * @param reportId (URL 경로에서 보고서 ID 추출)
+     */
+    @DeleteMapping("/{reportsId}")
+    public ResponseEntity<ApiResponse<Void>> deleteReport(
+            @PathVariable Long reportsId
+    ){
+        reportService.deleteReport(reportsId);
+
+        return ResponseEntity.ok(ApiResponse.success("보고서 삭제 성공", null));
+    }
 }
    
