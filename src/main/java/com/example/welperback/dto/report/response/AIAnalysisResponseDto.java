@@ -1,4 +1,4 @@
-﻿package com.example.welperback.dto.report.response;
+package com.example.welperback.dto.report.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,9 @@ public class AIAnalysisResponseDto {
     @Getter
     @NoArgsConstructor
     public static class NeedsAssessmentDto {
-        private NeedClothingDto clothing; // ?섏깮??        private NeedFoodDto food; // ?앹깮??        private NeedDailyLivingDto dailyLiving; // ?쇱긽?앺솢
+        private NeedClothingDto clothing; // ?섏깮??
+        private NeedFoodDto food; // ?앹깮??
+        private NeedDailyLivingDto dailyLiving; // ?쇱긽?앺솢
         private NeedHealthDto health; // 嫄닿컯
         private NeedPsychosocialDto psychosocial; // ?щ━?뺤꽌
         private NeedJobDto job; // 吏곸뾽
@@ -29,19 +31,23 @@ public class AIAnalysisResponseDto {
         private NeedHousingDto housing; // 二쇨굅
         private NeedEducationDto education; // 援먯쑁
         private NeedCaregivingDto caregiving; // ?뚮큵
-        private NeedRelationshipsDto relationships; // 媛議?諛??ы쉶??愿怨?        private NeedFamilyFunctionDto familyFunction; // 媛議깃린??        private NeedSafetyDto safety; // ?덉쟾
+        private NeedRelationshipsDto relationships;
+        private NeedFamilyFunctionDto familyFunction; // 媛議깃린??
+        private NeedSafetyDto safety; // ?덉쟾
         private NeedLegalDto legal; // 沅뚯씡蹂댁옣 諛?踰뺣쪧
     }
 
     // --- 2. 媛??뺢뎄 ?곸뿭???몃? DTO (泥댄겕由ъ뒪???ы븿) ---
 
-    // 2-1. ?섏깮??    @Getter @NoArgsConstructor
+    // 2-1. ?섏깮??
+    @Getter @NoArgsConstructor
     public static class NeedClothingDto {
         private String description; private int level; private int priority;
         private String provision; private String management;
     }
 
-    // 2-2. ?앹깮??    @Getter @NoArgsConstructor
+    // 2-2. ?앹깮??
+    @Getter @NoArgsConstructor
     public static class NeedFoodDto {
         private String description; private int level; private int priority;
         private String mealsPerDay; private String reasonForSkipping;
@@ -86,7 +92,8 @@ public class AIAnalysisResponseDto {
         private List<String> difficulties; private String satisfaction;
     }
     
-    // 2-7-Helper. 寃쎌젣 DTO??    @Getter @NoArgsConstructor
+    // 2-7-Helper. 寃쎌젣 DTO??
+    @Getter @NoArgsConstructor
     public static class IncomeDto {
         private int total; private int labor; private int govSupport; private int donation; private int other;
     }
@@ -140,13 +147,15 @@ public static class NeedEconomicDto {
         private String target; private String relationship; private String needs;
     }
 
-    // 2-11. 愿怨?    @Getter @NoArgsConstructor
+    // 2-11. 愿怨?
+    @Getter @NoArgsConstructor
     public static class NeedRelationshipsDto {
         private String description; private int level; private int priority;
         private String familyConflict; private String familyRelations; private String neighbors; private String socialSupport;
     }
 
-    // 2-12. 媛議깃린??    @Getter @NoArgsConstructor
+    // 2-12. 媛議깃린??
+    @Getter @NoArgsConstructor
     public static class NeedFamilyFunctionDto {
         private String description; private int level; private int priority;
         private String rolePerformance; private int familyCompetenceScore;

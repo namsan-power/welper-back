@@ -44,6 +44,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/**",
                                 "/api/v1/auth/login").permitAll()
+                        // 여기도 꼭 지우기
+                        .requestMatchers("/api/v1/result/analyze/voice/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

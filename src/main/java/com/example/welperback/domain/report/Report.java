@@ -55,6 +55,13 @@ public class Report {
     @Column(name = "ai_analysis_data", columnDefinition = "json")
     private String aiAnalysisData;
 
+    @Column(name = "status", length = 20)
+    private String status= "PENDING";
+
+
+    public String getStatus(){return status;}
+    public void setStatus(String status){this.status = status;}
+
     protected Report() {
     }
 

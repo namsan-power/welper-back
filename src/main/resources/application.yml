@@ -4,6 +4,11 @@
 spring:
   profiles:
     active: local
+  # 음성 파일 size 설정
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 application:
   name: welper-back
@@ -13,10 +18,9 @@ jwt:
   access-expiration: 3600000 # 1시간
   refresh-expiration: 604800000 # 7일
 
-<<<<<<< HEAD
 ai:
   model:
-    url: ${AI_MODEL_URL}
+    url: ${AI_MODEL_URL} # 호출할 AI 모델 주소
 
 # ==================================================================
 # 파일 업로드 설정、 이 부분이 고민 되는데（AWS S3 사용 여부 결정해야함, 구조상 보이스 파일을 로컬에 저장하는 걸로 우선 했음)
@@ -24,11 +28,14 @@ ai:
 file:
   upload-dir: ${FILE_UPLOAD_DIR}
 
-=======
 springdoc:
   swagger-ui:
     path: /swagger
->>>>>>> dba74e3447e0962703b865bb6cf9e45637f96f8a
+
+welper:
+  server:
+    base-url: "http://localhost:8000"
+
 
 ---
 # ==================================================================
@@ -75,3 +82,7 @@ spring:
       hibernate:
         show_sql: false
         format_sql: false
+
+welper:
+  server:
+    baes-url: http://api.welper.store
