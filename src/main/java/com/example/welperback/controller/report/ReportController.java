@@ -3,6 +3,7 @@ package com.example.welperback.controller.report;
 import com.example.welperback.dto.report.request.ReportCreateRequestDto;
 import com.example.welperback.global.response.ApiResponse;
 import com.example.welperback.service.report.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class ReportController {
 
     @PostMapping("")
     public ResponseEntity<ApiResponse<Void>> createReport(
-       @RequestPart(value ="reportDto") ReportCreateRequestDto reportDto,
+       @RequestPart(value ="reportDto") @Valid ReportCreateRequestDto reportDto,
        @RequestPart(value = "voiceFile") MultipartFile voiceFile
     ){
         reportService.createReport(reportDto, voiceFile);
