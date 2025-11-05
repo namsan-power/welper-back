@@ -37,6 +37,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         // 여기도 꼭 지우기
                         .requestMatchers( "/api/v1/reports").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/swagger",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/v1/**",
+                                "/api/v1/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
