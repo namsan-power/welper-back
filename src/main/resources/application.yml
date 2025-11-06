@@ -15,8 +15,8 @@ application:
 
 jwt:
   secret: ${JWT_SECRET}
-  access-expiration: 3600000 # 1시간
-  refresh-expiration: 604800000 # 7일
+  access-expiration: 3600000   # 1시간
+  refresh-expiration: 604800000  # 7일
 
 ai:
   model:
@@ -30,7 +30,7 @@ file:
 
 springdoc:
   swagger-ui:
-    path: /swagger
+    path: /swagger   # Swagger 단축 경로 설정
 
 welper:
   server:
@@ -77,7 +77,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: false
@@ -86,3 +86,8 @@ spring:
 welper:
   server:
     baes-url: http://api.welper.store
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger
