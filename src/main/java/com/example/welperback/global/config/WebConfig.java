@@ -10,13 +10,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
+        registry.addMapping("/**")
                 .allowedOrigins(
                         "https://api.welper.store",
                         "https://www.api.welper.store",
                         "https://welper.store",
-                        "http://localhost:8080)")// 프론트, 백엔드 등 cors 허용 주소
+                        "http://localhost:8080")// 프론트, 백엔드 등 cors 허용 주소
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600);
     }
