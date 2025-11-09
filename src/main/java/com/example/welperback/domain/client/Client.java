@@ -186,4 +186,21 @@ public class Client {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+    public void updateClientInfo(
+            String name,
+            String phoneNumber,
+            String address,
+            ClientStatus status,
+            ReferralSource referralSource,
+            String requestContent
+    ) {
+        if (name != null && !name.isBlank()) this.name = name;
+        if (phoneNumber != null && !phoneNumber.isBlank()) this.phoneNumber = phoneNumber;
+        if (address != null && !address.isBlank()) this.address = address;
+        if (status != null) this.status = status;
+        if (referralSource != null) this.referralSource = referralSource;
+        if (requestContent != null && !requestContent.isBlank()) this.requestContent = requestContent;
+    }
+
+
 }

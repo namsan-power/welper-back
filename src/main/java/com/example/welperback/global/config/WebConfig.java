@@ -15,7 +15,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://api.welper.store",
                         "https://www.api.welper.store",
                         "https://welper.store",
-                        "http://localhost:8080")// 프론트, 백엔드 등 cors 허용 주소
+                        "http://localhost:8080",
+                        "http://localhost:3000",
+                        "http://127.0.0.1:3000")// 프론트, 백엔드 등 cors 허용 주소
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
