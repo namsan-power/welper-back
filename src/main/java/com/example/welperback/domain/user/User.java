@@ -16,8 +16,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import lombok.Setter;
 
 @Entity
+@Setter
 @Table(name = "users")
 public class User {
 
@@ -86,6 +88,10 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.passwordHash = encodedPassword;
     }
 
     public String getName() {
