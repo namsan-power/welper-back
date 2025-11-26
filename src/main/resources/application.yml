@@ -40,6 +40,13 @@ spring:
     username: "welper"
     password: ${DB_LOCAL_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  # 멀티 폼데이터를 처리하기 위해 하는 것
+  # 스프링 부트 3.x 버전부터 자동 enable이 아니라 따로 설정해줘야함
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
 
 ---
 # ==================================================================
