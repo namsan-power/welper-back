@@ -33,35 +33,35 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database: mysql
+    database: postgresql
 
   datasource:
-    url: "jdbc:mysql://localhost:3306/welper"
-    username: "root"
+    url: "jdbc:postgresql://localhost:5432/welper_db"
+    username: "welper"
     password: ${DB_LOCAL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
 
 ---
 # ==================================================================
 # prod (운영용)
 # ==================================================================
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
+#spring:
+#  config:
+#    activate:
+#      on-profile: prod
+#
+#  datasource:
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        show_sql: false
+#        format_sql: false
 
 springdoc:
   swagger-ui:

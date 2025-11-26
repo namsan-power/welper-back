@@ -17,9 +17,9 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         Server devServer = new Server();
         devServer.setUrl("http://localhost:8080");
-
-        Server prodServer = new Server();
-        prodServer.setUrl("https://api.welper.store"); // 운영 서버 URL
+//
+//        Server prodServer = new Server();
+//        prodServer.setUrl("https://api.welper.store"); // 운영 서버 URL
 
         Info info = new Info()
                 .title("Welper API 문서") // API 문서 제목
@@ -28,7 +28,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer, prodServer))
+                .servers(List.of(devServer))
                 .components(new Components()
                         .addSecuritySchemes("BearerAuth",
                                 new SecurityScheme()
