@@ -1,32 +1,28 @@
 package com.example.welperback.global.response;
 
+import lombok.Getter;
+
+@Getter
 public class ApiResponse<T> {
-    private final String message;
-    private final int code;
+    private final boolean success;
     private final T data;
+    private final ErrorDetails error;
 
-    private ApiResponse(String message, int code, T data) {
-        this.message = message;
-        this.code = code;
+    private ApiResponse(boolean success, T data, ErrorDetails error) {
+        this.success = success;
         this.data = data;
+        this.error = error;
     }
 
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(message,200,data);
-    }
-    public static <T> ApiResponse<T> error(String message, int code) {
-        return new ApiResponse<>(message,code,null);
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(true, data, null);
     }
 
-    public String getMessage() {
-        return message;
+    public static <T> ApiResponse<T> error(String code, String message, String details) {
+        return new ApiResponse<>(false, null, new ErrorDetails(code, message, details));
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public T getData() {
-        return data;
+    public static <T> ApiResponse<T> error(String code, String message) {
+        return new ApiResponse<>(false, null, new ErrorDetails(code, message, null));
     }
 }
