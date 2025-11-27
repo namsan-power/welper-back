@@ -1,5 +1,8 @@
 package com.example.welperback.global.response;
 
+import lombok.Getter;
+
+@Getter
 public class ApiResponse<T> {
 
     private final boolean success;
