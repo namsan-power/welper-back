@@ -44,7 +44,7 @@ public enum ErrorCode {
         return status;
     }
 
-    public String getMessage() {
-        return message;
+    public Object getDetails() {
+        return null; // 필요 없을 때
     }
 }

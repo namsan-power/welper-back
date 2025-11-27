@@ -7,38 +7,57 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * ✔ CustomException 처리
+     */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException e) {
+
         ErrorCode errorCode = e.getErrorCode();
+
         return ResponseEntity
                 .status(errorCode.getStatus())
                 .body(ApiResponse.error(
-                        errorCode.getCode(),
-                        errorCode.getMessage()
+                        errorCode.getMessage(),
+                        errorCode.getStatus().value(),
+                        errorCode.getDetails()
                 ));
     }
 
+    /**
+     * ✔ 모든 예기치 못한 오류 처리
+     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneralException(Exception e, HttpServletRequest request) throws Exception {
+    public ResponseEntity<ApiResponse<Object>> handleGeneralException(
+            Exception e,
+            HttpServletRequest request
+    ) {
+
         String uri = request.getRequestURI();
 
-        // Swagger, API Docs 요청은 전역 예외처리 대상에서 제외
+        // Swagger 요청은 제외
         if (uri.startsWith("/v3/api-docs") ||
-                uri.startsWith("/swagger-ui") ||
-                uri.startsWith("/swagger")) {
-            throw e;
+                uri.startsWith("/swagger") ||
+                uri.startsWith("/swagger-ui")) {
+            throw new RuntimeException(e);
         }
 
         e.printStackTrace();
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(
-                        "SERVER001",
                         "서버 내부 오류가 발생했습니다.",
-                        e.getMessage()
+                        500,
+                        Map.of(
+                                "type", e.getClass().getSimpleName(),
+                                "message", e.getMessage()
+                        )
                 ));
     }
 }
