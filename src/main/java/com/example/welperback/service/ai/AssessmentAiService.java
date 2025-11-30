@@ -4,13 +4,22 @@ import com.example.welperback.domain.assessment.AssessmentRecord;
 import com.example.welperback.domain.client.Client;
 import com.example.welperback.dto.ai.AiAssessmentSaveRequest;
 import com.example.welperback.dto.ai.AiAssessmentStatusResponse;
+import com.example.welperback.dto.ai.AiJobResponse;
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
 import com.example.welperback.repository.AssessmentRecordRepository;
 import com.example.welperback.repository.ClientRepository;
-import com.example.welperback.service.ai.polling.PollingStore;
+import com.example.welperback.service.ai.store.AssessmentAiJobStore;
+import com.example.welperback.service.ai.worker.AssessmentAiJobRunner;
 import lombok.RequiredArgsConstructor;
+import com.example.welperback.service.ai.store.AssessmentAiJobStore.AiJob;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,69 +29,131 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AssessmentAiService {
 
-    private final PollingStore pollingStore;
+    @Qualifier("assessmentAiWebClient")
+    // 후에 테스트 시에 배포
+    private final WebClient aiWebClient;
+    private final AssessmentAiJobStore jobStore;
+    private final AssessmentAiJobRunner jobRunner;
+
+
+
     private final AssessmentRecordRepository assessmentRecordRepository;
     private final ClientRepository clientRepository;
 
-    // 2번 API 응답용
-    public record AiRequestInit(
-            String requestId,
-            String status,
-            String message
-    ) {}
 
-    // =========================
-    // 2번: AI 분석 요청 시작
-    // =========================
-    public AiRequestInit startAiAssessment(AssessmentAiRequestDto dto) {
-        String requestId = "REQ-" + UUID.randomUUID().toString().substring(0, 8);
-        pollingStore.init(requestId);
 
-        return new AiRequestInit(
-                requestId,
-                "PROCESSING",
-                "AI 분석을 시작했습니다."
-        );
-    }
 
-    // =========================
-    // 3번: AI 분석 결과 조회 (Polling)
-    //  - 지금 잘 돌아가고 있으니까 그대로 유지
-    // =========================
-    public AiAssessmentStatusResponse getAssessmentStatus(String requestId) {
+    /**
+     * 2번: AI 서버에 직접 요청해서 결과까지 받아오는 메서드 (local)
+     */
+    public AiAssessmentStatusResponse requestAiAndGetResult(AssessmentAiRequestDto dto) {
 
-        var status = pollingStore.get(requestId);
-        if (status == null) {
-            return AiAssessmentStatusResponse.builder()
-                    .status("NOT_FOUND")
-                    .message("해당 요청 ID를 찾을 수 없습니다.")
-                    .assessment(null)
-                    .build();
+        // 1) AI가 오래 연산하는 것처럼 3초 정도 딜레이
+        try {
+            Thread.sleep(3000);  // 3초 동안 "AI 분석 중..." 느낌만 내기
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
 
-        pollingStore.increaseProgress(requestId);
-        var updated = pollingStore.get(requestId);
-
-        if (!"FINISHED".equals(updated.state())) {
-            return AiAssessmentStatusResponse.builder()
-                    .status("PROCESSING")
-                    .message("AI가 음성 분석을 진행 중입니다.")
-                    .assessment(null)
-                    .build();
-        }
-
+        // 2) 기존에 만들어둔 Mock JSON 사용
         Map<String, Object> assessment = buildMockAssessment();
 
+        // 3) 우리 공통 응답 DTO로 래핑해서 FE에게 전달
         return AiAssessmentStatusResponse.builder()
                 .status("FINISHED")
-                .message(null)
+                .message("AI 분석을 완료했습니다.")
                 .assessment(assessment)
                 .build();
     }
+    /**
+     * 2번: AI 사정 분석 Job 등록 (caseNumber 기준)
+     *
+     * - dto 안에 있는 caseNumber를 기준으로 Job 생성
+     * - 큐에 caseNumber를 넣고, 워커가 비동기로 실행
+     */
+    public AiAssessmentStatusResponse requestAiAssessment(AssessmentAiRequestDto dto) {
 
-    // =========================
-    // 4번: AI 사정 결과 DB 저장
-    // =========================
+        String caseNumber = dto.caseNumber();
+        if (caseNumber == null || caseNumber.isBlank()) {
+            throw new IllegalArgumentException("caseNumber는 필수입니다.");
+        }
+
+        // 1) JobStore에 초기 상태 등록 (PROCESSING)
+        jobStore.initJob(caseNumber, dto);
+
+        // 2) 워커 큐에 caseNumber 전달 (비동기 처리 시작)
+        jobRunner.submit(caseNumber);
+
+        // 3) 클라이언트에 초기 상태 반환
+        return AiAssessmentStatusResponse.builder()
+                .caseNumber(caseNumber)
+                .status("PROCESSING")
+                .message("AI 사정 분석 작업을 등록했습니다.")
+                .assessment(null)
+                .build();
+    }
+
+
+    /**
+     * 2번: AI 사정 작업 등록 (Job 큐에 넣고 바로 응답)
+     */
+    public AiJobResponse enqueueAiAssessment(AssessmentAiRequestDto dto) {
+
+        String jobId = "JOB-" + UUID.randomUUID().toString().substring(0, 8);
+
+        // 1) JobStore에 초기 상태 등록
+        jobStore.initJob(jobId, dto);
+
+        // 2) 워커 큐에 jobId 전달 (비동기 처리 시작)
+        jobRunner.submit(jobId);
+
+        // 3) 클라이언트에 초기 상태 반환
+        return AiJobResponse.builder()
+                .jobId(jobId)
+                .status("QUEUED")
+                .build();
+    }
+    /**
+     * 3번: 사례 번호(caseNumber) 기준으로 AI 사정 상태/결과 조회
+     */
+    public AiAssessmentStatusResponse getCaseStatus(String caseNumber) {
+
+        AiJob job = jobStore.getJob(caseNumber);
+
+        // Job이 전혀 없으면 NONE 상태로 응답
+        if (job == null) {
+            return AiAssessmentStatusResponse.builder()
+                    .caseNumber(caseNumber)
+                    .status("NONE")
+                    .message("해당 사례에 대한 AI 사정 분석 요청이 없습니다.")
+                    .assessment(null)
+                    .build();
+        }
+
+        String status = job.getStatus();
+        String msg = switch (status) {
+            case "PROCESSING" -> "AI가 사정 분석을 진행 중입니다.";
+            case "FINISHED" -> "AI 사정 분석이 완료되었습니다.";
+            case "FAILED" -> "AI 분석에 실패했습니다: " + job.getErrorMessage();
+            default -> "알 수 없는 상태입니다.";
+        };
+
+        return AiAssessmentStatusResponse.builder()
+                .caseNumber(caseNumber)
+                .status(status)
+                .message(msg)
+                .assessment(job.getAssessment())
+                .build();
+    }
+
+
+
+    /**
+     * 4번: AI 사정 결과를 DB에 저장
+     *
+     * - Welper ERD 기준: AssessmentRecord + Client(caseNumber FK)
+     * - AiAssessmentSaveRequest는 기존 구현 그대로 사용
+     */
     public String saveAiAssessment(AiAssessmentSaveRequest dto) {
 
         // 1) caseNumber로 Client 찾기
@@ -121,7 +192,7 @@ public class AssessmentAiService {
 
 
     // ======================================================
-    // 3번 API 완성 응답용 Mock 데이터
+    // AI 응답 생성부
     // → 여기가 data.assessment에 그대로 들어가는 JSON 구조
     // ======================================================
     private Map<String, Object> buildMockAssessment() {
@@ -242,4 +313,5 @@ public class AssessmentAiService {
 
         return root;
     }
+
 }

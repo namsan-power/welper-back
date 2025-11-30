@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/refresh",
-                                "/api/v1/auth/register"
+                                "/api/v1/auth/register",
+                                "/api/v1/**" // dev 용 배포시 제거
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

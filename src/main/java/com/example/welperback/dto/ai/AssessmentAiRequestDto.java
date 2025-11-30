@@ -24,4 +24,5 @@ public record AssessmentAiRequestDto(
             String relationship,
             String name
     ) {}
+
 }

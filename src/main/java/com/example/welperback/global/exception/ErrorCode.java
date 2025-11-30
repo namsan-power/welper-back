@@ -40,6 +40,10 @@ public enum ErrorCode {
         return code;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     public HttpStatus getStatus() {
         return status;
     }

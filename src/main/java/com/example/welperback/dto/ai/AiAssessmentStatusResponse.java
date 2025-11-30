@@ -7,19 +7,23 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * 특정 사례(caseNumber)에 대한
+ * AI 사정 작업의 상태 & 결과 응답 DTO
+ *
+ * - caseNumber : 사례 번호 (Client.caseNumber)
+ * - status     : NONE / PROCESSING / FINISHED / FAILED
+ * - message    : 상태 설명 메시지
+ * - assessment : AI가 생성한 사정 JSON (FINISHED일 때)
+ */
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AiAssessmentStatusResponse {
 
-    // PROCESSING / FINISHED
+    private String caseNumber;
     private String status;
-
-    // PROCESSING일 때: "AI가 음성 분석을 진행 중입니다."
-    // FINISHED일 때: null 가능
     private String message;
-
-    // FINISHED일 때만 채워지는 평가 결과 전체 JSON
     private Map<String, Object> assessment;
 }

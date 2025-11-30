@@ -18,11 +18,14 @@ public class ApiResponse<T> {
         this.data = data;
         this.error = error;
     }
-
+    // 응답 버전 1
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, 200, data, null);
     }
-
+    // 응답 버전 2
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(true, null, 200, data, null);
+    }
     public static <T> ApiResponse<T> error(String message, int code, Object errorDetails) {
         return new ApiResponse<>(false, message, code, null, errorDetails);
     }
