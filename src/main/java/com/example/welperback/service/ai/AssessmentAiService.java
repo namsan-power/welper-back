@@ -8,6 +8,7 @@ import com.example.welperback.dto.ai.AiJobResponse;
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
 import com.example.welperback.repository.AssessmentRecordRepository;
 import com.example.welperback.repository.ClientRepository;
+import com.example.welperback.service.ai.client.AssessmentAiClient;
 import com.example.welperback.service.ai.store.AssessmentAiJobStore;
 import com.example.welperback.service.ai.worker.AssessmentAiJobRunner;
 import lombok.RequiredArgsConstructor;
@@ -39,32 +40,26 @@ public class AssessmentAiService {
 
     private final AssessmentRecordRepository assessmentRecordRepository;
     private final ClientRepository clientRepository;
-
+    private final AssessmentAiClient aiClient;
 
 
 
     /**
-     * 2번: AI 서버에 직접 요청해서 결과까지 받아오는 메서드 (local)
+     * 2번: AI 서버에 직접 요청해서 결과까지 받아오는 메서드 (ngrok + 동기)
      */
     public AiAssessmentStatusResponse requestAiAndGetResult(AssessmentAiRequestDto dto) {
 
-        // 1) AI가 오래 연산하는 것처럼 3초 정도 딜레이
-        try {
-            Thread.sleep(3000);  // 3초 동안 "AI 분석 중..." 느낌만 내기
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // 1) ngrok으로 노출된 AI 서버에 실제로 POST 요청
+        Map<String, Object> assessment = aiClient.callAssessment(dto);
 
-        // 2) 기존에 만들어둔 Mock JSON 사용
-        Map<String, Object> assessment = buildMockAssessment();
-
-        // 3) 우리 공통 응답 DTO로 래핑해서 FE에게 전달
+        // 2) 우리 공통 응답 DTO로 래핑해서 FE에게 전달
         return AiAssessmentStatusResponse.builder()
-                .status("FINISHED")
+                .status("FINISHED")                       // 지금은 항상 성공 가정
                 .message("AI 분석을 완료했습니다.")
-                .assessment(assessment)
+                .assessment(assessment)                   // AI가 준 JSON 그대로
                 .build();
     }
+
     /**
      * 2번: AI 사정 분석 Job 등록 (caseNumber 기준)
      *
@@ -90,27 +85,6 @@ public class AssessmentAiService {
                 .status("PROCESSING")
                 .message("AI 사정 분석 작업을 등록했습니다.")
                 .assessment(null)
-                .build();
-    }
-
-
-    /**
-     * 2번: AI 사정 작업 등록 (Job 큐에 넣고 바로 응답)
-     */
-    public AiJobResponse enqueueAiAssessment(AssessmentAiRequestDto dto) {
-
-        String jobId = "JOB-" + UUID.randomUUID().toString().substring(0, 8);
-
-        // 1) JobStore에 초기 상태 등록
-        jobStore.initJob(jobId, dto);
-
-        // 2) 워커 큐에 jobId 전달 (비동기 처리 시작)
-        jobRunner.submit(jobId);
-
-        // 3) 클라이언트에 초기 상태 반환
-        return AiJobResponse.builder()
-                .jobId(jobId)
-                .status("QUEUED")
                 .build();
     }
     /**

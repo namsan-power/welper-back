@@ -17,8 +17,7 @@ springdoc:
   swagger-ui:
     path: /swagger   # Swagger 단축 경로 설정
 ai:
-  assessment:
-    base-url: http://localhost:9001   # 실제 AI 서버 주소/포트 설정하기
+  assessment.base-url: https://loury-pseudoculturally-gia.ngrok-free.dev
 
 ---
 # ==================================================================

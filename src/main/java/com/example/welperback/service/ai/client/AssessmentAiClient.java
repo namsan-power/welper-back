@@ -33,7 +33,7 @@ public class AssessmentAiClient {
 
         try {
             return aiWebClient.post()
-                    .uri("/assessments") // ★ 실제 AI 서버 엔드포인트에 맞게 수정
+                    .uri("v1/analyze/first-report") // ★ 실제 AI 서버 엔드포인트에 맞게 수정
                     .bodyValue(dto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, clientResponse ->
@@ -43,7 +43,7 @@ public class AssessmentAiClient {
                                     ))
                     )
                     .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                    .block(Duration.ofMinutes(10)); // GPU 따라 5분 이상 걸릴 수도 있으니 충분히
+                    .block(Duration.ofMinutes(30)); // GPU 따라 5분 이상 걸릴 수도 있으니 충분히
         } catch (WebClientResponseException e) {
             throw new RuntimeException(
                     "AI 서버 HTTP 응답 오류: " + e.getStatusCode() + " - " + e.getResponseBodyAsString(), e);
