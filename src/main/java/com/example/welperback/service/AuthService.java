@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -267,21 +268,30 @@ public class AuthService {
     }
 
     /**
-     * Refresh Token 저장
+     * Refresh Token 저장 (Upsert 방식)
+     * 기존 토큰이 있으면 업데이트, 없으면 새로 생성
      */
     private void saveRefreshToken(String userId, String token) {
-        // 기존 Refresh Token 삭제
-        refreshTokenRepository.findByUserId(userId)
-                .ifPresent(refreshTokenRepository::delete);
-
-        // 새로운 Refresh Token 저장
-        RefreshToken refreshToken = RefreshToken.builder()
-                .userId(userId)
-                .token(token)
-                .expiresAt(LocalDateTime.now().plusDays(7)) // 7일 후 만료
-                .build();
-
-        refreshTokenRepository.save(refreshToken);
+        LocalDateTime expiresAt = LocalDateTime.now().plusDays(7);
+        
+        // 기존 Refresh Token 조회
+        Optional<RefreshToken> existingToken = refreshTokenRepository.findByUserId(userId);
+        
+        if (existingToken.isPresent()) {
+            // 기존 토큰이 있으면 업데이트
+            RefreshToken refreshToken = existingToken.get();
+            refreshToken.setToken(token);
+            refreshToken.setExpiresAt(expiresAt);
+            refreshTokenRepository.save(refreshToken);
+        } else {
+            // 기존 토큰이 없으면 새로 생성
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .userId(userId)
+                    .token(token)
+                    .expiresAt(expiresAt)
+                    .build();
+            refreshTokenRepository.save(refreshToken);
+        }
     }
 
     /**
