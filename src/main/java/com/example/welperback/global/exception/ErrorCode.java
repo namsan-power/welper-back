@@ -16,6 +16,8 @@ public enum ErrorCode {
     
     // Client
     CLIENT_NOT_FOUND("CLIENT001", HttpStatus.NOT_FOUND, "존재하지 않는 클라이언트입니다."),
+    PRIVACY_CONSENT_REQUIRED("CLIENT002", HttpStatus.BAD_REQUEST, "개인정보 수집 및 이용 동의가 필요합니다."),
+    INVALID_MANAGER_ID("CLIENT003", HttpStatus.BAD_REQUEST, "유효하지 않은 담당자 ID입니다."),
     
     // Validation
     INVALID_REQUEST("COMMON001", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
