@@ -23,6 +23,8 @@ springdoc:
     path: /swagger   # Swagger 단축 경로 설정
 ai:
   assessment.base-url: https://loury-pseudoculturally-gia.ngrok-free.dev
+  supervision:
+    base-url: http://localhost:9002 # 이거 나중에 ai 서버 올리면 수정해야함
 
 ---
 # ==================================================================

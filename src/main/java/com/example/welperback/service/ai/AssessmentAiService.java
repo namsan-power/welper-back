@@ -4,43 +4,45 @@ import com.example.welperback.domain.assessment.AssessmentRecord;
 import com.example.welperback.domain.client.Client;
 import com.example.welperback.dto.ai.AiAssessmentSaveRequest;
 import com.example.welperback.dto.ai.AiAssessmentStatusResponse;
-import com.example.welperback.dto.ai.AiJobResponse;
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
 import com.example.welperback.repository.AssessmentRecordRepository;
 import com.example.welperback.repository.ClientRepository;
 import com.example.welperback.service.ai.client.AssessmentAiClient;
 import com.example.welperback.service.ai.store.AssessmentAiJobStore;
 import com.example.welperback.service.ai.worker.AssessmentAiJobRunner;
-import lombok.RequiredArgsConstructor;
 import com.example.welperback.service.ai.store.AssessmentAiJobStore.AiJob;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@SuppressWarnings({"NullAway", "unused", "null"})
 public class AssessmentAiService {
 
-    @Qualifier("assessmentAiWebClient")
-    // 후에 테스트 시에 배포
-    private final WebClient aiWebClient;
     private final AssessmentAiJobStore jobStore;
     private final AssessmentAiJobRunner jobRunner;
-
-
-
     private final AssessmentRecordRepository assessmentRecordRepository;
     private final ClientRepository clientRepository;
     private final AssessmentAiClient aiClient;
+
+    public AssessmentAiService(
+            AssessmentAiJobStore jobStore,
+            AssessmentAiJobRunner jobRunner,
+            AssessmentRecordRepository assessmentRecordRepository,
+            ClientRepository clientRepository,
+            AssessmentAiClient aiClient
+    ) {
+        this.jobStore = jobStore;
+        this.jobRunner = jobRunner;
+        this.assessmentRecordRepository = assessmentRecordRepository;
+        this.clientRepository = clientRepository;
+        this.aiClient = aiClient;
+    }
 
 
 
@@ -128,12 +130,14 @@ public class AssessmentAiService {
      * - Welper ERD 기준: AssessmentRecord + Client(caseNumber FK)
      * - AiAssessmentSaveRequest는 기존 구현 그대로 사용
      */
+    @SuppressWarnings("NullAway")
     public String saveAiAssessment(AiAssessmentSaveRequest dto) {
 
         // 1) caseNumber로 Client 찾기
-        Client client = clientRepository.findById(dto.getCaseNumber())
+        String caseNumber = java.util.Objects.requireNonNull(dto.getCaseNumber(), "caseNumber");
+        Client client = clientRepository.findById(caseNumber)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("존재하지 않는 사례번호입니다: " + dto.getCaseNumber())
+                        new IllegalArgumentException("존재하지 않는 사례번호입니다: " + caseNumber)
                 );
         // → 나중에 CustomException + ErrorCode.CLIENT_NOT_FOUND로 바꿔도 됨
 
@@ -160,8 +164,14 @@ public class AssessmentAiService {
 
         // 4) 저장
         AssessmentRecord saved = assessmentRecordRepository.save(record);
-
-        return saved.getRecordId();
+        if (saved == null) {
+            throw new IllegalStateException("AssessmentRecord 저장에 실패했습니다.");
+        }
+        String savedId = saved.getRecordId();
+        if (savedId == null) {
+            throw new IllegalStateException("AssessmentRecord ID 생성에 실패했습니다.");
+        }
+        return savedId;
     }
 
 
