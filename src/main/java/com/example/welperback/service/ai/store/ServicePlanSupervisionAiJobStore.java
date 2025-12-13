@@ -8,74 +8,99 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 /**
- *  AI 계획 생성 상태관리 서비스
+ * AI 계획서 슈퍼비전 상태관리 서비스
  */
 @Component
-public class ServicePlanAiJobStore {
+public class ServicePlanSupervisionAiJobStore {
 
-    private final Map<String, AiJob> store = new ConcurrentHashMap<>();
+    private final Map<String, SupervisionJob> store = new ConcurrentHashMap<>();
 
+    public static final String STATUS_QUEUED = "QUEUED";
+    public static final String STATUS_PROCESSING = "PROCESSING";
+    public static final String STATUS_FINISHED = "FINISHED";
+    public static final String STATUS_FAILED = "FAILED";
+
+    /**
+     * 슈퍼비전 작업 초기화 (큐 대기 상태)
+     */
     public void initJob(String caseNumber, Map<String, Object> requestPayload) {
-        AiJob job = AiJob.builder()
+
+        SupervisionJob job = SupervisionJob.builder()
                 .caseNumber(caseNumber)
-                .status("PROCESSING")
+                .status(STATUS_QUEUED)
                 .errorMessage(null)
                 .requestPayload(requestPayload)
-                .planDraft(null)
+                .planSupervision(null)
                 .build();
+
         store.put(caseNumber, job);
     }
 
-    public AiJob getJob(String caseNumber) {
+    public SupervisionJob getJob(String caseNumber) {
         return store.get(caseNumber);
     }
 
+    /**
+     * 실제 AI 작업 시작
+     */
     public void markRunning(String caseNumber) {
         store.computeIfPresent(caseNumber, (key, job) ->
-                job.toBuilder().status("PROCESSING").build()
-        );
-    }
-
-    public void markFinished(String caseNumber, Map<String, Object> planDraft) {
-        store.computeIfPresent(caseNumber, (key, job) ->
                 job.toBuilder()
-                        .status("FINISHED")
-                        .planDraft(planDraft)
-                        .errorMessage(null)
+                        .status(STATUS_PROCESSING)
                         .build()
         );
     }
-    public void markFinishedWithComment(String caseNumber, String comment) {
+
+    /**
+     * 작업 완료
+     */
+    public void markFinished(String caseNumber, String supervisionResult) {
         store.computeIfPresent(caseNumber, (key, job) ->
                 job.toBuilder()
-                        .status("FINISHED")
-                        .planDraftComment(comment)
+                        .status(STATUS_FINISHED)
+                        .planSupervision(supervisionResult)
                         .errorMessage(null)
                         .build()
         );
     }
 
+    /**
+     * 작업 실패
+     */
     public void markFailed(String caseNumber, String errorMessage) {
         store.computeIfPresent(caseNumber, (key, job) ->
                 job.toBuilder()
-                        .status("FAILED")
+                        .status(STATUS_FAILED)
                         .errorMessage(errorMessage)
                         .build()
         );
     }
 
-
     @Getter
     @Builder(toBuilder = true)
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AiJob {
+    public static class SupervisionJob {
+
         private String caseNumber;
-        private String status; // PROCESSING / FINISHED / FAILED
+
+        /**
+         * QUEUED / PROCESSING / FINISHED / FAILED
+         */
+        private String status;
+
         private String errorMessage;
+
+        /**
+         * 사용자 수정 계획서 payload
+         */
         private Map<String, Object> requestPayload;
-        private Map<String, Object> planDraft;
-        private String planDraftComment;
+
+        /**
+         * AI 슈퍼비전 결과 (텍스트)
+         */
+        private String planSupervision;
     }
 }

@@ -5,6 +5,8 @@ import com.example.welperback.domain.client.Client;
 import com.example.welperback.domain.file.DocumentFile;
 import com.example.welperback.dto.ai.AiServicePlanStatusResponse;
 import com.example.welperback.dto.ai.ServicePlanAiRequestDto;
+import com.example.welperback.dto.ai.ServicePlanSupervisionRequestDto;
+import com.example.welperback.dto.ai.ServicePlanSupervisionResponse;
 import com.example.welperback.global.exception.CustomException;
 import com.example.welperback.global.exception.ErrorCode;
 import com.example.welperback.repository.AssessmentRecordRepository;
@@ -12,7 +14,9 @@ import com.example.welperback.repository.ClientRepository;
 import com.example.welperback.repository.DocumentFileRepository;
 import com.example.welperback.service.ai.store.ServicePlanAiJobStore;
 import com.example.welperback.service.ai.store.ServicePlanAiJobStore.AiJob;
+import com.example.welperback.service.ai.store.ServicePlanSupervisionAiJobStore;
 import com.example.welperback.service.ai.worker.ServicePlanAiJobRunner;
+import com.example.welperback.service.ai.worker.ServicePlanSupervisionAiJobRunner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -32,6 +36,9 @@ public class ServicePlanAiService {
 
     private final ServicePlanAiJobStore jobStore;
     private final ServicePlanAiJobRunner jobRunner;
+    private final ServicePlanSupervisionAiJobStore SuperjobStore;
+    private final ServicePlanSupervisionAiJobRunner SuperjobRunner;
+
     private static final Logger log = LoggerFactory.getLogger(ServicePlanAiService.class);
 
     /**
@@ -185,4 +192,69 @@ public class ServicePlanAiService {
         m.put("category", file.getCategory());
         return m;
     }
+
+    private Map<String, Object> buildSupervisionPayload(ServicePlanSupervisionRequestDto dto) {
+
+        Map<String, Object> root = new LinkedHashMap<>();
+
+        root.put("caseNumber", dto.caseNumber());
+        root.put("planDate", dto.planDate());
+        root.put("planItems", dto.planItems()); // ✅ 그대로 전달
+
+        return root;
+    }
+
+
+    public void requestSupervision(ServicePlanSupervisionRequestDto dto) {
+
+        String caseNumber = dto.caseNumber();
+
+        if (caseNumber == null || caseNumber.isBlank()) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+
+        Map<String, Object> payload = buildSupervisionPayload(dto);
+
+        // Job 등록 (payload 포함)
+        jobStore.initJob(caseNumber, payload);
+
+        // 비동기 AI 작업 제출
+        jobRunner.submit(caseNumber);
+    }
+    public ServicePlanSupervisionResponse getSupervisionStatus(String caseNumber) {
+
+        var job = SuperjobStore.getJob(caseNumber);
+
+        if (job == null) {
+            return ServicePlanSupervisionResponse.builder()
+                    .caseNumber(caseNumber)
+                    .status("NONE")
+                    .message("슈퍼비전 요청 이력이 없습니다.")
+                    .planSupervision(null)
+                    .build();
+        }
+
+        String message = switch (job.getStatus()) {
+            case "PROCESSING" ->
+                    "AI가 슈퍼비전 코멘트를 생성 중입니다.";
+            case "FINISHED" ->
+                    "AI 슈퍼비전 생성이 완료되었습니다.";
+            case "FAILED" ->
+                    "AI 슈퍼비전 생성에 실패했습니다.";
+            default ->
+                    "알 수 없는 상태입니다.";
+        };
+
+        return ServicePlanSupervisionResponse.builder()
+                .caseNumber(caseNumber)
+                .status(job.getStatus())
+                .message(message)
+                .planSupervision(job.getPlanSupervision())
+                .build();
+    }
+
+
+
+
+
 }

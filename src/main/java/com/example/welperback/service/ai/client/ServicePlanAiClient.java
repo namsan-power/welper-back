@@ -21,6 +21,14 @@ public class ServicePlanAiClient {
     public ServicePlanAiClient(@Qualifier("planAiWebClient") WebClient aiWebClient) {
         this.aiWebClient = aiWebClient;
     }
+    public String callPlanSupervision(Map<String, Object> payload) {
+        return aiWebClient.post()
+                .uri("/ai/plan/supervision")
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
 
     public Map<String, Object> callPlanDraft(Map<String, Object> payload) {
         try {
