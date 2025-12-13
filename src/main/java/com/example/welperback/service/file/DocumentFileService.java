@@ -223,5 +223,44 @@ public class DocumentFileService {
         return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
+    // DocumentFileService.java (추가 메서드만 확인하면 됨)
+    @Transactional(readOnly = true)
+    public DocumentFile validateAndGetFile(String fileId, Client client) {
+
+        log.info("📂 validateAndGetFile 호출");
+        log.info("fileId = {}", fileId);
+        log.info("client.caseNumber = {}", client.getCaseNumber());
+
+        if (fileId == null || fileId.isBlank()) {
+            log.info("➡️ fileId가 null/blank → null 반환");
+            return null;
+        }
+
+        DocumentFile file = documentFileRepository.findById(fileId)
+                .orElseThrow(() -> {
+                    log.error("❌ DocumentFile 없음: {}", fileId);
+                    return new CustomException(ErrorCode.DOCUMENT_NOT_FOUND);
+                });
+
+        log.info("✔ DocumentFile 조회 성공");
+        log.info("file.client.caseNumber = {}", file.getClient().getCaseNumber());
+        log.info("file.status = {}", file.getStatus());
+
+        if (!file.getClient().getCaseNumber().equals(client.getCaseNumber())) {
+            log.error("❌ caseNumber 불일치");
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+
+        if (!"READY".equals(file.getStatus())) {
+            log.error("❌ status != READY");
+            throw new CustomException(ErrorCode.DOCUMENT_NOT_FOUND);
+        }
+
+        log.info("✅ DocumentFile 검증 통과");
+        return file;
+    }
+
+
+
 }
 
