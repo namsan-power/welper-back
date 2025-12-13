@@ -24,6 +24,7 @@ public enum ErrorCode {
     
     // File
     FILE_UPLOAD_FAILED("FILE001", HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+    DOCUMENT_NOT_FOUND("FILE002", HttpStatus.NOT_FOUND, "존재하지 않는 문서입니다."),
     
     // Server
     INTERNAL_SERVER_ERROR("SERVER001", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
