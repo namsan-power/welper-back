@@ -13,6 +13,11 @@ jwt:
   access-expiration: 3600000   # 1시간
   refresh-expiration: 604800000  # 7일
 
+# 파일 저장소 (온프레 로컬)
+storage:
+  root-path: ${user.home}/welper-files
+  max-size-bytes: 52428800 # 50MB
+
 springdoc:
   swagger-ui:
     path: /swagger   # Swagger 단축 경로 설정

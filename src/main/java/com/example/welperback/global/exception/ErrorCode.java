@@ -16,6 +16,8 @@ public enum ErrorCode {
     
     // Client
     CLIENT_NOT_FOUND("CLIENT001", HttpStatus.NOT_FOUND, "존재하지 않는 클라이언트입니다."),
+    PRIVACY_CONSENT_REQUIRED("CLIENT002", HttpStatus.BAD_REQUEST, "개인정보 수집 및 이용 동의가 필요합니다."),
+    INVALID_MANAGER_ID("CLIENT003", HttpStatus.BAD_REQUEST, "유효하지 않은 담당자 ID입니다."),
     
     // Intake Record
     INTAKE_RECORD_NOT_FOUND("INTAKE001", HttpStatus.NOT_FOUND, "존재하지 않는 인테이크 기록입니다."),
@@ -25,6 +27,7 @@ public enum ErrorCode {
     
     // File
     FILE_UPLOAD_FAILED("FILE001", HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+    DOCUMENT_NOT_FOUND("FILE002", HttpStatus.NOT_FOUND, "존재하지 않는 문서입니다."),
     
     // Server
     INTERNAL_SERVER_ERROR("SERVER001", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
