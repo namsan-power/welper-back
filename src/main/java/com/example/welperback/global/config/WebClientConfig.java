@@ -26,8 +26,7 @@ public class WebClientConfig {
      *   assessment:
      *     base-url: http://localhost:9001   # 또는 ngrok 등 외부 주소
      */
-    @Bean
-    @Qualifier("assessmentAiWebClient")
+    @Bean(name = "assessmentAiWebClient")
     public WebClient assessmentAiWebClient(
             WebClient.Builder builder,
             @Value("${ai.assessment.base-url}") String baseUrl
@@ -36,4 +35,11 @@ public class WebClientConfig {
                 .baseUrl(baseUrl)
                 .build();
     }
+    @Bean(name = "planAiWebClient")
+    public WebClient planAiWebClient(
+            WebClient.Builder builder,
+            @Value("${ai.assessment.base-url}") String baseUrl){
+        return builder.baseUrl(baseUrl).build();
+    }
+
 }

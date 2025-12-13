@@ -21,7 +21,7 @@ public class DocumentFile {
     private String id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "caseNumber")
+    @JoinColumn(name = "case_number")
     private Client client;
 
     private String stage;    // INTAKE, ASSESSMENT, PLANNING, EXECUTION, RESULT ...
@@ -34,7 +34,7 @@ public class DocumentFile {
     private String storagePath; // 로컬/NAS 경로
 
     @ManyToOne
-    @JoinColumn(name = "uploaderId")
+    @JoinColumn(name = "uploader_id")
     private User uploader;
 
     private String status;      // READY, DELETED

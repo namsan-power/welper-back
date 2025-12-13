@@ -6,6 +6,8 @@ import com.example.welperback.dto.ai.AiJobResponse;
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
 import com.example.welperback.global.response.ApiResponse;
 import com.example.welperback.service.ai.AssessmentAiService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/ai/assessments")
 @RequiredArgsConstructor
+@Tag(name = "Assessment-AI", description = "1차 사례 보고서 AI 파트")
 public class AssessmentAiController {
 
     private final AssessmentAiService aiService;
@@ -24,6 +27,10 @@ public class AssessmentAiController {
      * - Body에 caseNumber가 포함된 AssessmentAiRequestDto를 받음
      * - 응답에는 caseNumber와 status만 내려줌 (jobId는 노출하지 않음)
      */
+    @Operation(
+            summary = "1차 사정보고서 생성 요청",
+            description = "1차 사정보고서 생성 요청"
+    )
     @PostMapping("/request")
     public ApiResponse<AiAssessmentStatusResponse> requestAiAssessment(
             @RequestBody AssessmentAiRequestDto requestDto
@@ -48,6 +55,10 @@ public class AssessmentAiController {
      *   - FINISHED   : 완료 (assessment 필드에 JSON 포함)
      *   - FAILED     : 실패 (message에 오류 내용 포함)
      */
+    @Operation(
+            summary = "1차 사정보고서 상태 조회",
+            description = "caseNumber를 기준으로 사정보고서 생성 상태 조회"
+    )
     @GetMapping("/{caseNumber}")
     public ApiResponse<AiAssessmentStatusResponse> getAiAssessmentByCase(
             @PathVariable String caseNumber
@@ -81,6 +92,10 @@ public class AssessmentAiController {
 //    }
 
     // 4번: AI 사정 결과 DB 저장
+    @Operation(
+            summary = "1차 사정보고서 최종 저장",
+            description = "사용자가 loop 안에 참여하여 최종 저장하는 단계"
+    )
     @PostMapping("/result/save")
     public ApiResponse<?> saveAiAssessment(
             @RequestBody AiAssessmentSaveRequest request

@@ -1,6 +1,7 @@
 package com.example.welperback.domain.assessment;
 
 import com.example.welperback.domain.client.Client;
+import com.example.welperback.domain.file.DocumentFile;
 import com.example.welperback.global.jpa.JsonMapConverter;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,19 +21,28 @@ import java.util.Map;
 public class AssessmentRecord {
 
     @Id
+    @Column(name = "record_id")
     private String recordId;
 
     @ManyToOne
-    @JoinColumn(name = "caseNumber")
+    @JoinColumn(name = "case_number")
     private Client client;
 
     private LocalDate assessmentDate;
 
     private String type; // NEW, REASSESSMENT
 
-    private String genogramFilePath;
-    private String ecomapFilePath;
-    private String voiceRecordFilePath;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genogram_file_id")
+    private DocumentFile genogramFile;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ecomap_file_id")
+    private DocumentFile ecomapFile;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "voice_record_file_id")
+    private DocumentFile voiceRecordFile;
 
     // ✅ 여기: Converter 제거하고 JSON 타입으로 매핑
     @JdbcTypeCode(SqlTypes.JSON)              // Hibernate에게 "이 필드는 JSON이야"라고 알려줌
@@ -47,4 +57,13 @@ public class AssessmentRecord {
 
     @Column(columnDefinition = "text")
     private String comprehensiveOpinion;
+
+    public void setGenogramFilePath(String s) {
+    }
+
+    public void setEcomapFilePath(String s) {
+    }
+
+    public void setVoiceRecordFilePath(String s) {
+    }
 }

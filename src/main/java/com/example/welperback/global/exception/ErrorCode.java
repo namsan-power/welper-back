@@ -21,7 +21,10 @@ public enum ErrorCode {
     
     // Intake Record
     INTAKE_RECORD_NOT_FOUND("INTAKE001", HttpStatus.NOT_FOUND, "존재하지 않는 인테이크 기록입니다."),
-    
+
+    // Assessment Record
+    ASSESSMENT_RECORD_NOT_FOUND("ASSESSMENT001", HttpStatus.NOT_FOUND, "존재하지 않는 사정보고서입니다."),
+
     // Validation
     INVALID_REQUEST("COMMON001", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     

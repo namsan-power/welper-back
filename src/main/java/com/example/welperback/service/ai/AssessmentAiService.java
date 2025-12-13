@@ -2,6 +2,7 @@ package com.example.welperback.service.ai;
 
 import com.example.welperback.domain.assessment.AssessmentRecord;
 import com.example.welperback.domain.client.Client;
+import com.example.welperback.domain.file.DocumentFile;
 import com.example.welperback.dto.ai.AiAssessmentSaveRequest;
 import com.example.welperback.dto.ai.AiAssessmentStatusResponse;
 import com.example.welperback.dto.ai.AiJobResponse;
@@ -11,6 +12,7 @@ import com.example.welperback.repository.ClientRepository;
 import com.example.welperback.service.ai.client.AssessmentAiClient;
 import com.example.welperback.service.ai.store.AssessmentAiJobStore;
 import com.example.welperback.service.ai.worker.AssessmentAiJobRunner;
+import com.example.welperback.service.file.DocumentFileService;
 import lombok.RequiredArgsConstructor;
 import com.example.welperback.service.ai.store.AssessmentAiJobStore.AiJob;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,13 +32,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AssessmentAiService {
 
-    @Qualifier("assessmentAiWebClient")
     // 후에 테스트 시에 배포
-    private final WebClient aiWebClient;
     private final AssessmentAiJobStore jobStore;
     private final AssessmentAiJobRunner jobRunner;
 
 
+    private final DocumentFileService documentFileService;
 
     private final AssessmentRecordRepository assessmentRecordRepository;
     private final ClientRepository clientRepository;
@@ -129,7 +130,6 @@ public class AssessmentAiService {
      * - AiAssessmentSaveRequest는 기존 구현 그대로 사용
      */
     public String saveAiAssessment(AiAssessmentSaveRequest dto) {
-
         // 1) caseNumber로 Client 찾기
         Client client = clientRepository.findById(dto.getCaseNumber())
                 .orElseThrow(() ->
@@ -139,6 +139,21 @@ public class AssessmentAiService {
 
         // 2) recordId 생성
         String recordId = "AR-" + UUID.randomUUID().toString().substring(0, 8);
+        // 3) 파일 ID 검증 (없으면 null 허용)
+        // 2️⃣ 파일 검증 + 엔티티 변환
+        DocumentFile genogramFile =
+                documentFileService.validateAndGetFile(
+                        dto.getGenogramFileId(), client
+                );
+
+        DocumentFile ecomapFile =
+                documentFileService.validateAndGetFile(
+                        dto.getEcomapFileId(), client
+                );
+
+        DocumentFile voiceRecordFile =
+                documentFileService.validateAndGetFile(dto.getVoiceRecordFileId(), client);
+
 
         // 3) 엔티티 빌드
         AssessmentRecord record = AssessmentRecord.builder()
@@ -147,9 +162,9 @@ public class AssessmentAiService {
                 .assessmentDate(dto.getAssessmentDate())
                 .type(dto.getType())
 
-                .genogramFilePath(dto.getGenogramFileId())
-                .ecomapFilePath(dto.getEcomapFileId())
-                .voiceRecordFilePath(dto.getVoiceRecordFileUrl())
+                .genogramFile(genogramFile)
+                .ecomapFile(ecomapFile)
+                .voiceRecordFile(voiceRecordFile)
 
                 .checklistData(dto.getChecklistData())  // ★ 전체 assessment JSON 통으로 저장
                 .produceStatus("COMPLETE")

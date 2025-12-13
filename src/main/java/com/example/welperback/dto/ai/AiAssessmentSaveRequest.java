@@ -24,7 +24,7 @@ public class AiAssessmentSaveRequest {
     // === 파일 / 음성 경로 (지금은 단순 String) ===
     private String genogramFileId;       // -> genogramFilePath
     private String ecomapFileId;         // -> ecomapFilePath
-    private String voiceRecordFileUrl;   // -> voiceRecordFilePath
+    private String voiceRecordFileId; // ✅ ID로 통일
 
     /**
      * checklistData 전체:
@@ -47,4 +47,6 @@ public class AiAssessmentSaveRequest {
     // === AI가 생성한 텍스트 요약 ===
     private String strengthsAndResources;   // 강점·자원
     private String comprehensiveOpinion;    // 종합의견
+
+
 }
