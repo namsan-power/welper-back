@@ -1,7 +1,6 @@
 package com.example.welperback.service.ai.client;
 
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -34,9 +33,10 @@ public class AssessmentAiClient {
     public Map<String, Object> callAssessment(AssessmentAiRequestDto dto) {
 
         try {
+            AssessmentAiRequestDto request = java.util.Objects.requireNonNull(dto, "dto");
             return aiWebClient.post()
                     .uri("v1/analyze/first-report") // ★ 실제 AI 서버 엔드포인트에 맞게 수정
-                    .bodyValue(dto)
+                    .bodyValue(request)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, clientResponse ->
                             clientResponse.bodyToMono(String.class)

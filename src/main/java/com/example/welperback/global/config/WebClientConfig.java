@@ -32,7 +32,21 @@ public class WebClientConfig {
             @Value("${ai.assessment.base-url}") String baseUrl
     ) {
         return builder
-                .baseUrl(baseUrl)
+                .baseUrl(baseUrl == null ? "" : baseUrl)
+                .build();
+    }
+
+    /**
+     * AI 슈퍼비전 검색 서버 호출용 WebClient.
+     */
+    @Bean
+    @Qualifier("supervisionAiWebClient")
+    public WebClient supervisionAiWebClient(
+            WebClient.Builder builder,
+            @Value("${ai.supervision.base-url}") String baseUrl
+    ) {
+        return builder
+                .baseUrl(baseUrl == null ? "" : baseUrl)
                 .build();
     }
     @Bean(name = "planAiWebClient")
