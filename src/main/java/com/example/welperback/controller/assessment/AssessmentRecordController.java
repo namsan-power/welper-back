@@ -4,6 +4,8 @@ import com.example.welperback.dto.assessment.AssessmentRecordResponse;
 import com.example.welperback.dto.assessment.AssessmentRecordUpdateRequest;
 import com.example.welperback.global.response.ApiResponse;
 import com.example.welperback.service.assessment.AssessmentRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/assessments")
 @RequiredArgsConstructor
+@Tag(name = "Assessment", description = "1차 사례 보고서 일반 파트")
 public class AssessmentRecordController {
 
     private final AssessmentRecordService assessmentRecordService;
@@ -21,6 +24,10 @@ public class AssessmentRecordController {
      *
      * GET /api/v1/assessments/{recordId}
      */
+    @Operation(
+            summary = "단일 보고서 조회",
+            description = "사정보고서 단건을 조회합니다."
+    )
     @GetMapping("/{recordId}")
     public ApiResponse<AssessmentRecordResponse> getAssessmentByRecordId(
             @PathVariable String recordId
@@ -40,6 +47,10 @@ public class AssessmentRecordController {
      * - 1차/재사정 모두 포함.
      * - FE에서 type == "NEW" 만 필터링하면 “1차 사정만”도 쉽게 구현 가능.
      */
+    @Operation(
+            summary = "케이스별 사정보고서 조회",
+            description = "caseNumber를 기준으로  사례별 사정 보고서 목록을 조회 가능"
+    )
     @GetMapping("/case/{caseNumber}")
     public ApiResponse<List<AssessmentRecordResponse>> getAssessmentsByCaseNumber(
             @PathVariable String caseNumber
@@ -58,6 +69,10 @@ public class AssessmentRecordController {
      *
      * - 수정 화면에서 만들어진 보고서 전체 JSON을 통째로 보낸다.
      */
+    @Operation(
+            summary = "사정 보고서 수정",
+            description = "사정보고서를 전체 수정합니다."
+    )
     @PutMapping("/{recordId}")
     public ApiResponse<AssessmentRecordResponse> updateAssessmentFully(
             @PathVariable String recordId,
@@ -75,6 +90,10 @@ public class AssessmentRecordController {
      *
      * DELETE /api/v1/assessments/{recordId}
      */
+    @Operation(
+            summary = "사정 보고서 삭제",
+            description = "recordId를 기준으로사정보고서를 삭제 합니다.합니다."
+    )
     @DeleteMapping("/{recordId}")
     public ApiResponse<?> deleteAssessment(
             @PathVariable String recordId

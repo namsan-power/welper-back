@@ -4,6 +4,8 @@ import com.example.welperback.domain.client.Client;
 import com.example.welperback.global.jpa.JsonMapConverter;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -27,8 +29,8 @@ public class ServicePlan {
     private LocalDate planDate;
 
     // JSONB 배열
-    @Column(columnDefinition = "jsonb")
-    @Convert(converter = JsonMapConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "plan_items", columnDefinition = "jsonb")
     private Map<String, Object> planItems;
 
     private String contractFilePath;

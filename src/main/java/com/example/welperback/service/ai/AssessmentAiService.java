@@ -2,6 +2,7 @@ package com.example.welperback.service.ai;
 
 import com.example.welperback.domain.assessment.AssessmentRecord;
 import com.example.welperback.domain.client.Client;
+import com.example.welperback.domain.file.DocumentFile;
 import com.example.welperback.dto.ai.AiAssessmentSaveRequest;
 import com.example.welperback.dto.ai.AiAssessmentStatusResponse;
 import com.example.welperback.dto.ai.AssessmentAiRequestDto;
@@ -24,8 +25,14 @@ import java.util.UUID;
 @SuppressWarnings({"NullAway", "unused", "null"})
 public class AssessmentAiService {
 
+
+    // 후에 테스트 시에 배포
     private final AssessmentAiJobStore jobStore;
     private final AssessmentAiJobRunner jobRunner;
+
+
+    private final DocumentFileService documentFileService;
+
     private final AssessmentRecordRepository assessmentRecordRepository;
     private final ClientRepository clientRepository;
     private final AssessmentAiClient aiClient;
@@ -132,7 +139,6 @@ public class AssessmentAiService {
      */
     @SuppressWarnings("NullAway")
     public String saveAiAssessment(AiAssessmentSaveRequest dto) {
-
         // 1) caseNumber로 Client 찾기
         String caseNumber = java.util.Objects.requireNonNull(dto.getCaseNumber(), "caseNumber");
         Client client = clientRepository.findById(caseNumber)
@@ -143,6 +149,21 @@ public class AssessmentAiService {
 
         // 2) recordId 생성
         String recordId = "AR-" + UUID.randomUUID().toString().substring(0, 8);
+        // 3) 파일 ID 검증 (없으면 null 허용)
+        // 2️⃣ 파일 검증 + 엔티티 변환
+        DocumentFile genogramFile =
+                documentFileService.validateAndGetFile(
+                        dto.getGenogramFileId(), client
+                );
+
+        DocumentFile ecomapFile =
+                documentFileService.validateAndGetFile(
+                        dto.getEcomapFileId(), client
+                );
+
+        DocumentFile voiceRecordFile =
+                documentFileService.validateAndGetFile(dto.getVoiceRecordFileId(), client);
+
 
         // 3) 엔티티 빌드
         AssessmentRecord record = AssessmentRecord.builder()
@@ -151,9 +172,9 @@ public class AssessmentAiService {
                 .assessmentDate(dto.getAssessmentDate())
                 .type(dto.getType())
 
-                .genogramFilePath(dto.getGenogramFileId())
-                .ecomapFilePath(dto.getEcomapFileId())
-                .voiceRecordFilePath(dto.getVoiceRecordFileUrl())
+                .genogramFile(genogramFile)
+                .ecomapFile(ecomapFile)
+                .voiceRecordFile(voiceRecordFile)
 
                 .checklistData(dto.getChecklistData())  // ★ 전체 assessment JSON 통으로 저장
                 .produceStatus("COMPLETE")

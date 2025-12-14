@@ -1,6 +1,7 @@
 package com.example.welperback.dto.assessment;
 
 import com.example.welperback.domain.assessment.AssessmentRecord;
+import com.example.welperback.dto.file.DocumentResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,9 +18,10 @@ public class AssessmentRecordResponse {
     private LocalDate assessmentDate;
     private String type;
 
-    private String genogramFilePath;
-    private String ecomapFilePath;
-    private String voiceRecordFilePath;
+    // ✅ String filePath 대신 DocumentResponse
+    private DocumentResponse genogramFile;
+    private DocumentResponse ecomapFile;
+    private DocumentResponse voiceRecordFile;
 
     private Map<String, Object> checklistData;
 
@@ -32,9 +34,9 @@ public class AssessmentRecordResponse {
                 .caseNumber(record.getClient().getCaseNumber())
                 .assessmentDate(record.getAssessmentDate())
                 .type(record.getType())
-                .genogramFilePath(record.getGenogramFilePath())
-                .ecomapFilePath(record.getEcomapFilePath())
-                .voiceRecordFilePath(record.getVoiceRecordFilePath())
+                .genogramFile(record.getGenogramFile() != null ? DocumentResponse.from(record.getGenogramFile()) : null)
+                .ecomapFile(record.getEcomapFile() != null ? DocumentResponse.from(record.getEcomapFile()) : null)
+                .voiceRecordFile(record.getVoiceRecordFile() != null ? DocumentResponse.from(record.getVoiceRecordFile()) : null)
                 .checklistData(record.getChecklistData())
                 .strengthsAndResources(record.getStrengthsAndResources())
                 .comprehensiveOpinion(record.getComprehensiveOpinion())

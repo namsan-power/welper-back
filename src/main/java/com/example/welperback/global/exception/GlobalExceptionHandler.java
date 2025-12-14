@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import lombok.extern.slf4j.Slf4j;
+
 
 import java.util.Map;
-
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -18,6 +20,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException e) {
 
+        log.error("❌ CustomException 발생");
+        log.error("ErrorCode: {}", e.getErrorCode());
+        log.error("Message: {}", e.getMessage(), e);
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity

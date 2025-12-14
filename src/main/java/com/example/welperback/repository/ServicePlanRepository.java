@@ -2,13 +2,11 @@ package com.example.welperback.repository;
 
 import com.example.welperback.domain.assessment.ServicePlan;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 
-@Repository
+import java.util.List;
+
 public interface ServicePlanRepository extends JpaRepository<ServicePlan, String> {
 
-    Optional<ServicePlan> findFirstByClient_CaseNumberOrderByPlanDateDesc(String caseNumber);
+    List<ServicePlan> findByClient_CaseNumberOrderByPlanDateDesc(String caseNumber);
 }
-

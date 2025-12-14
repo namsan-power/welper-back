@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 public class Client {
 
     @Id
+    @Column(name = "case_number")
     private String caseNumber;
+
 
     private String clientName;
 
